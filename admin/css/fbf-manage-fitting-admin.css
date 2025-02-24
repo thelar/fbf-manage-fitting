@@ -1,0 +1,50 @@
+/**
+ * All of the CSS for your admin-specific functionality should be
+ * included in this file.
+ */
+.manage_fitting.tb-modal-content .garage-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.5em;
+}
+
+.manage_fitting.tb-modal-content .garage-row:not(.selected):hover {
+    background: lightgrey;
+    cursor: pointer;
+}
+
+.manage_fitting.tb-modal-content .garage-row.selected {
+    border: 1px solid red;
+}
+
+.manage_fitting.tb-modal-content .garage-row .date select {
+    width: 120px;
+}
+
+.manage_fitting.tb-modal-footer {
+    margin: 1em 0;
+    position: absolute !important;
+    right: 15px !important;
+    left: 15px !important;
+    display: flex;
+    justify-content: space-between;
+}
+
+#TB_window .tb-modal-content .spinner,
+#TB_window .tb-modal-footer .spinner {
+    visibility: visible;
+    float: none;
+    margin-top: -4px;
+}
+
+#manage_fitting .fitting-status {
+    font-weight: bold;
+}
+
+#manage_fitting .fitting-status.unconfirmed {
+    color: darkred;
+}
+
+#manage_fitting .fitting-status.confirmed {
+    color: darkgreen;
+}
