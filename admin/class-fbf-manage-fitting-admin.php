@@ -140,6 +140,10 @@ class Fbf_Manage_Fitting_Admin {
             $booking_date = new \DateTime($selected_garage['date']);
             if($selected_garage['confirmed']){
                 $time = $selected_garage['time'];
+                $time = str_pad($time, 4, '0', STR_PAD_LEFT);
+                $hours = substr($time, 0, 2);
+                $minutes = substr($time, -2);
+                $time  = $hours . ':' . $minutes;
             }else{
                 $time = $selected_garage['time']==='am'?'Morning':'Afternoon';
             }
