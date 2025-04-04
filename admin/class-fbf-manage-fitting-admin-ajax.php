@@ -119,6 +119,14 @@ class Fbf_Manage_Fitting_Admin_Ajax
         $date = filter_var($_POST['date'], FILTER_SANITIZE_STRING);
         $time = filter_var($_POST['time'], FILTER_SANITIZE_STRING);
         $order = wc_get_order($order_id);
+        $booking_date_time = new \DateTime($date);
+        /*$tz = new \DateTimeZone('Europe/London');
+        $booking_date_time->setTimezone($tz);*/
+        $booking_hour = substr(str_pad($time, 4, '0', STR_PAD_LEFT), 0, 2);
+        $booking_minute = substr(str_pad($time, 4, '0', STR_PAD_LEFT), -2);
+        $booking_date_time->setTime($booking_hour, $booking_minute);
+        $booking_date_time_end = clone $booking_date_time;
+        $booking_date_time_end->modify('+ 1 hour');
 
         // Get current garage id
         $orig_garage_id = get_post_meta($order_id, '_gs_selected_garage', true)['id'];
@@ -151,49 +159,82 @@ class Fbf_Manage_Fitting_Admin_Ajax
                 'time' => $time,
             ]);
 
+            $ics_location = '';
+
             if(!empty($r['trading_name'])){
                 $order->set_shipping_company($r['trading_name']);
+                $ics_location.= $r['trading_name'] . ', ';
             }else{
                 $order->set_shipping_company('');
             }
 
             if(!empty($r['address_1'])){
                 $order->set_shipping_address_1($r['address_1']);
+                $ics_location.= $r['address_1'] . ', ';
             }else{
                 $order->set_shipping_address_1('');
             }
 
             if(!empty($r['address_2'])){
                 $order->set_shipping_address_2($r['address_2']);
+                $ics_location.= $r['address_2'] . ', ';
             }else{
                 $order->set_shipping_address_2('');
             }
 
             if(!empty($r['town_city'])){
                 $order->set_shipping_city($r['town_city']);
+                $ics_location.= $r['town_city'] . '. ';
             }else{
                 $order->set_shipping_city('');
             }
 
             if(!empty($r['county'])){
                 $order->set_shipping_state($r['county']);
+                $ics_location.= $r['county'] . '. ';
             }else{
                 $order->set_shipping_state('');
             }
 
             if(!empty($r['postcode'])){
                 $order->set_shipping_postcode($r['postcode']);
+                $ics_location.= $r['postcode'] . '.';
             }else{
                 $order->set_shipping_postcode('');
             }
             $order->save();
             $status = 'success';
 
+            // Get lat long for garage
+            $lat_lng = get_transient('national_fitting_garage_location_' . $r['centre_id']);
+
             // Here we'll trigger the confirmation email
+            // Generate ics file
+
+            require_once(get_template_directory() . '/../app/ics.php');
+            $properties = array(
+                'dtstart' => $booking_date_time,
+                'dtend' => $booking_date_time_end,
+                'summary' => '4x4 Tyres fitting appointment',
+                'location' => $ics_location, //Address
+                'url' => $lat_lng ? sprintf('https://maps.google.com/?q=%s,%s', $lat_lng['latitude'], $lat_lng['longitude']) : '', //Google maps url with lat lng of garage location embedded
+                'description' => sprintf('4x4 Tyres fitting appointment%s%s%s.', $r['trading_name'] ? ' at ' . $r['trading_name'] : '', $r['town_city'] ? ', ' . $r['town_city'] : '', ' on ' . $booking_date_time->format('jS F') . ' at ' . $booking_date_time->format('g:ia')) //With reg of car and address of garage at date/time
+            );
+            $ics = new \ICS($properties);
+            $ics_file_contents = $ics->to_string();
+            $path = wp_upload_dir()['basedir'] . '/ics/' . $order->get_id() . '_fitting.ics';
+
+            if(file_put_contents($path, $ics_file_contents)){
+                $attachment = $path;
+            }else{
+                $attachment = null;
+            }
+
+
             $email = WC()->mailer()->get_emails()['WC_Fitting_Confirmation'];
             $email->set_updated($garage_updated);
             $email->set_test_mode(true);
-            $email->trigger($order->get_id());
+            $sent = $email->trigger($order->get_id(), $attachment);
 
         }else{
             $status = 'error';
