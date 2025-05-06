@@ -233,7 +233,7 @@ class Fbf_Manage_Fitting_Admin_Ajax
 
             $email = WC()->mailer()->get_emails()['WC_Fitting_Confirmation'];
             $email->set_updated($garage_updated);
-            $email->set_test_mode(true);
+            $email->set_test_mode(false);
             $sent = $email->trigger($order->get_id(), $attachment);
 
         }else{
