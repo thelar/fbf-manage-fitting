@@ -6,6 +6,9 @@
     display: flex;
     justify-content: space-between;
     margin-bottom: 0.5em;
+    padding: 5px;
+    border-radius: 5px;
+    border: 2px solid transparent;
 }
 
 .manage_fitting.tb-modal-content .garage-row:not(.selected):hover {
@@ -13,12 +16,28 @@
     cursor: pointer;
 }
 
+.manage_fitting.tb-modal-content .text-container {
+    max-height: 0;
+    overflow: hidden;
+}
+
+.manage_fitting.tb-modal-content .text-container textarea {
+    border: 2px solid darkgrey;
+    border-radius: 5px;
+}
+
 .manage_fitting.tb-modal-content .garage-row.selected {
-    border: 1px solid red;
+    border: 2px solid darkgrey;
+}
+
+.manage_fitting.tb-modal-content .garage-row .date,
+.manage_fitting.tb-modal-content .garage-row .time {
+    display: inline-block;
+    margin-left: 8px;
 }
 
 .manage_fitting.tb-modal-content .garage-row .date select {
-    width: 120px;
+    width: 140px;
 }
 
 .manage_fitting.tb-modal-footer {

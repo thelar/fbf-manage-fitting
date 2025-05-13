@@ -30,6 +30,28 @@
 	 */
 
 	$(function() {
+		$('.time-text-radio').bind('click', function(){
+			let which = $('.time-text-radio:checked').val();
+			let $text_container = $('.text-container');
+			let $garage_row = $('.garage-row.selected');
+			let $time_select = $garage_row.find('.time-select');
+			if(which==='text'){
+				$text_container.animate({'max-height': '100px'}, 200);
+				if($garage_row.length){
+					$time_select.prop('disabled', true);
+				}
+				// Allow user to confirm
+				check_row($garage_row);
+			}else if(which==='time'){
+				$text_container.animate({'max-height': '0'}, 200);
+				if($garage_row.length){
+					$time_select.prop('disabled', false);
+				}
+				check_row($garage_row);
+			}
+
+		})
+
 		$('#trigger-thickbox').on('click', function () {
 			/*
 			$.ajax({
@@ -54,6 +76,13 @@
 			$load_more.prop('disabled', true);
 			$confirm.prop('disabled', true);
 			$confirm.find('.spinner').hide();
+
+			// Initially set radio buttons for time/text to disabled and pre-select time
+			let $time_text_radio = $('input.time-text-radio');
+			$time_text_radio.prop('disabled', true);
+			$('input.time-text-radio[value=time]').prop('checked', true);
+			$('input.time-text-radio[value=text]').prop('checked', false);
+			$('.text-container').css({'max-height': '0'});
 
 			tb_show('Change Booking', url);
 			let $content = $('#TB_ajaxContent');
@@ -155,6 +184,7 @@
 			let selected_time = $window.attr('data-selected-time')
 			let $load_more = $('#load-more-garages');
 			let $confirm = $('#confirm-garage-booking');
+
 			$load_more.prop('disabled', true);
 			//$confirm.prop('disabled', true);
 			$load_more.find('.text').text('Loading garages...');
@@ -421,6 +451,10 @@
 				data: data,
 				dataType: 'json',
 				success: function (response) {
+					// Enable the time/text radio now
+					let $time_text_radio = $('input.time-text-radio');
+					$time_text_radio.prop('disabled', false);
+
 					console.log(response);
 					console.log(times);
 					$select.empty();
@@ -452,6 +486,13 @@
 				$garage_row.find('.date-select').val('');
 				$garage_row.find('.time-select').val('');
 
+				// Disable the time/text radios
+				let $time_text_radio = $('input.time-text-radio');
+				$time_text_radio.prop('disabled', true);
+				$('input.time-text-radio[value=time]').prop('checked', true);
+				$('input.time-text-radio[value=text]').prop('checked', false);
+				$('.text-container').animate({'max-height': '0'});
+
 				init_row($garage_row);
 			}
 		}
@@ -467,6 +508,17 @@
 				console.log('$date_select change');
 				$time_select.prop('disabled', true);
 				load_times($date_select.val(), $time_select);
+
+				// Disable the time/text radios
+				let $time_text_radio = $('input.time-text-radio');
+				$time_text_radio.prop('disabled', true);
+				$('input.time-text-radio[value=time]').prop('checked', true);
+				$('input.time-text-radio[value=text]').prop('checked', false);
+				$('.text-container').animate({'max-height': '0'});
+
+				// Disable confirm button
+				$('#confirm-garage-booking').prop('disabled', true);
+
 				return false;
 			});
 
@@ -484,14 +536,27 @@
 			let time = $row.find('.time-select').val();
 			let $confirm_button = $('#confirm-garage-booking');
 			$confirm_button.unbind('click');
-			if(id && date && time){
-				console.log('data exists');
-				console.log($confirm_button);
+
+			// Check if it time or text
+			let which = $('.time-text-radio:checked').val();
+
+
+			if(id && date && which==='text'){
+				console.log('data exists - text');
 				$confirm_button.prop('disabled', false);
 				$confirm_button.find('.spinner').hide();
 				$confirm_button.bind('click', function (){
 					// Set garage fitting time and date here
-					set_fitting($row);
+					set_fitting($row, which);
+					return false;
+				});
+			}else if(id && date && time && which==='time'){
+				console.log('data exists - time');
+				$confirm_button.prop('disabled', false);
+				$confirm_button.find('.spinner').hide();
+				$confirm_button.bind('click', function (){
+					// Set garage fitting time and date here
+					set_fitting($row, which);
 					return false;
 				});
 			}else{
@@ -502,11 +567,19 @@
 			}
 		}
 
-		function set_fitting($row){
+		function set_fitting($row, time_or_text){
+			console.log('set fitting');
 			let date = new Date($row.find('.date-select').val());
-			let time = $row.find('.time-select').val();
 			let name = $row.find('.garage-name').text();
-			let msg = `You are confirming the booking at ${name} for ${date.toLocaleString('en-GB', {year: 'numeric', month: 'long', day: 'numeric'})} at ${time.replace('00', ':00')}, would you like to continue?`;
+			let msg;
+			let time;
+			if(time_or_text==='time'){
+				time = $row.find('.time-select').val();
+				msg = `You are confirming the booking at ${name} for ${date.toLocaleString('en-GB', {year: 'numeric', month: 'long', day: 'numeric'})} at ${time.replace('00', ':00')}, would you like to continue?`;
+			}else{
+				time = $('.text-container textarea').val()
+				msg = `You are confirming the booking at ${name} for ${date.toLocaleString('en-GB', {year: 'numeric', month: 'long', day: 'numeric'})} with the text: "${time}", would you like to continue?`;
+			}
 			let $confirm = $('#confirm-garage-booking');
 			if(confirm(msg)){
 				$confirm.prop('disabled', true);
@@ -517,7 +590,8 @@
 					order_id: $('#TB_window').attr('data-order-id'),
 					garage_id: $row.attr('data-id'),
 					date: $row.find('.date-select').val(),
-					time: $row.find('.time-select').val(),
+					time: time,
+					which: time_or_text,
 				}
 				$.ajax({
 					// eslint-disable-next-line no-undef

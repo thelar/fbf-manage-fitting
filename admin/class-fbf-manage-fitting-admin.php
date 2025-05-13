@@ -147,13 +147,45 @@ class Fbf_Manage_Fitting_Admin {
             }else{
                 $time = $selected_garage['time']==='am'?'Morning':'Afternoon';
             }
-            printf('<strong>Selected garage:</strong> %s <br/><strong>Date/Time:</strong> %s - %s', $selected_garage['name'], $booking_date->format('jS F Y'), $time);
             if(!$is_confirmed){
+                printf('<strong>Selected garage:</strong> %s <br/><strong>Date/Time:</strong> %s - %s', $selected_garage['name'], $booking_date->format('jS F Y'), $time);
                 printf('<p>Booking status: <span class="fitting-status unconfirmed">Unconfirmed</span> - <a id="trigger-thickbox" href="#" data-post-id="%s">Confirm fitting</a></p>', $post->ID);
             }else{
+                if($selected_garage['confirmation_type']==='time'){
+                    printf('<strong>Selected garage:</strong> %s <br/><strong>Date/Time:</strong> %s - %s', $selected_garage['name'], $booking_date->format('jS F Y'), $time);
+                }else if($selected_garage['confirmation_type']==='text'){
+                    printf('<strong>Selected garage:</strong> %s <br/><strong>Date/Time:</strong> %s - &lsquo;%s&rsquo;', $selected_garage['name'], $booking_date->format('jS F Y'), $selected_garage['confirmation_text']);
+                }
                 printf('<p>Booking status: <span class="fitting-status confirmed">Confirmed</span> - <a id="trigger-thickbox" href="#" data-post-id="%s">Change fitting</a></p>', $post->ID);
             }
-            echo '<div id="manage-fittings-thickbox" style="display:none;"><div class="manage_fitting tb-modal-content"><h4 id="garages-heading">Please wait</h4><div class="garages" id="garages-container"></div><button class="button-secondary" id="load-more-garages" disabled><span class="spinner" style="margin: 0 5px 4px 0;"></span> <span class="text">Loading garages...</span></button></div><div class="manage_fitting tb-modal-footer"><button class="button-secondary" id="cancel-garage-booking" onclick="tb_remove()">Cancel</button><button class="button-primary" id="confirm-garage-booking" disabled><span class="spinner" style="margin: 0 5px 4px 0; display: none;"></span> <span class="text">Confirm booking</span></button></div></div>';
+            $html = <<<HTML
+<div id="manage-fittings-thickbox" style="display:none;">
+    <div class="manage_fitting tb-modal-content" style="margin: 1em 0;">
+        <div id="date-text-switch">
+            <fieldset style="padding: 0;">
+                <legend style="font-weight: bold; padding: 0; color: rgb(60, 67, 74); font-size: 1em;">Select time or add your own text?</legend>
+            </fieldset> 
+            <label style="margin-right: 16px;">
+                <input type="radio" name="time-text-group" value="time" class="time-text-radio" checked/> Select time
+            </label>
+            <label style="margin-right: 16px;">
+                <input type="radio" name="time-text-group" value="text" class="time-text-radio"/> Add text
+            </label>
+            <div class="text-container" style="margin-top: 0.5em;">
+                <textarea style="width: 100%;" rows="3" placeholder="Enter text to be added to confirmation email specifying time and any supporting information"></textarea>
+            </div>
+        </div>
+        <h4 id="garages-heading">Please wait</h4>
+        <div class="garages" id="garages-container"></div>
+        <button class="button-secondary" id="load-more-garages" disabled><span class="spinner" style="margin: 0 5px 4px 0;"></span> <span class="text">Loading garages...</span></button>
+    </div>
+    <div class="manage_fitting tb-modal-footer">
+        <button class="button-secondary" id="cancel-garage-booking" onclick="tb_remove()">Cancel</button><button class="button-primary" id="confirm-garage-booking" disabled><span class="spinner" style="margin: 0 5px 4px 0; display: none;"></span> <span class="text">Confirm booking</span></button>
+    </div>
+</div>
+HTML;
+
+            echo $html;
         }
     }
 }
