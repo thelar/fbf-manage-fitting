@@ -271,6 +271,16 @@
 			let delivery_time = $selected_garage_row.attr('data-delivery-time');
 			let am_pm_cutoff = 1200;
 			let times = {
+				'830': {
+					hour: '08',
+					minute: '30',
+					disabled: false,
+				},
+				'845': {
+					hour: '08',
+					minute: '45',
+					disabled: false,
+				},
 				'900': {
 					hour: '09',
 					minute: '00',
