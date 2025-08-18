@@ -136,9 +136,9 @@ class Fbf_Manage_Fitting_Admin {
     public function manage_fitting($post, $args){
         $order_num = $args['args']['order_num'];
         if($selected_garage = get_post_meta($order_num, '_gs_selected_garage', true)){
-            $is_confirmed = $selected_garage['confirmed'];
+            $is_confirmed = $selected_garage['confirmed'] ?? false;
             $booking_date = new \DateTime($selected_garage['date']);
-            if($selected_garage['confirmed']){
+            if($is_confirmed){
                 $time = $selected_garage['time'];
                 $time = str_pad($time, 4, '0', STR_PAD_LEFT);
                 $hours = substr($time, 0, 2);
