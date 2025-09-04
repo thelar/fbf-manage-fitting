@@ -151,6 +151,7 @@ class Fbf_Manage_Fitting_Admin {
                 printf('<strong>Selected garage:</strong> %s <br/><strong>Date/Time:</strong> %s - %s', $selected_garage['name'], $booking_date->format('jS F Y'), $time);
                 printf('<p>Booking status: <span class="fitting-status unconfirmed">Unconfirmed</span> - <a id="trigger-thickbox" href="#" data-post-id="%s">Confirm fitting</a></p>', $post->ID);
             }else{
+				var_dump($selected_garage);
                 if($selected_garage['confirmation_type']==='time'){
                     printf('<strong>Selected garage:</strong> %s <br/><strong>Date/Time:</strong> %s - %s', $selected_garage['name'], $booking_date->format('jS F Y'), $time);
                 }else if($selected_garage['confirmation_type']==='text'){
