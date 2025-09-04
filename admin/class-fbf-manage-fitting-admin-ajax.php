@@ -260,7 +260,7 @@ class Fbf_Manage_Fitting_Admin_Ajax
 
         $resp = [
             'status' => $status,
-            'error' => $error,
+            'error' => $error??null,
         ];
         echo json_encode($resp);
         die();
