@@ -37,7 +37,7 @@ class Fbf_Manage_Fitting_Admin_Ajax
         check_ajax_referer($this->plugin_name, 'ajax_nonce');
         global $wpdb;
         $garages_table = $wpdb->prefix . 'fbf_garages';
-        $order_id = filter_var($_POST['post_id'], FILTER_SANITIZE_STRING);
+        $order_id = strip_tags($_POST['post_id']);
         $order = wc_get_order($order_id);
         $is_fitting = $order->get_meta('_is_national_fitting', true);
         $radius = 45;
@@ -49,7 +49,7 @@ class Fbf_Manage_Fitting_Admin_Ajax
         $products = [];
         foreach($items as $item){
             $products[] = [
-                'id' => $item->get_id(),
+                'id' => $item->get_product_id(),
                 'quantity' => $item->get_quantity(),
             ];
         }
@@ -96,7 +96,7 @@ class Fbf_Manage_Fitting_Admin_Ajax
         echo json_encode([
             'status' => $status,
             'garages' => $garages,
-            'error' => $error,
+            'error' => $error??false,
             'lat' => $garage_ids['ids'][array_search($selected_garage['id'], array_column($garage_ids['ids'], 'id'))]['lat'],
             'long' => $garage_ids['ids'][array_search($selected_garage['id'], array_column($garage_ids['ids'], 'id'))]['long'],
             'order_id' => $order_id,
@@ -112,13 +112,13 @@ class Fbf_Manage_Fitting_Admin_Ajax
     public function fbf_manage_fitting_confirm_fitting()
     {
         check_ajax_referer($this->plugin_name, 'ajax_nonce');
-        $order_id = filter_var($_POST['order_id'], FILTER_SANITIZE_STRING);
+        $order_id = strip_tags($_POST['order_id']);
         global $wpdb;
         $table = $wpdb->prefix . 'fbf_garages';
-        $garage_id = filter_var($_POST['garage_id'], FILTER_SANITIZE_STRING);
-        $date = filter_var($_POST['date'], FILTER_SANITIZE_STRING);
-        $time = filter_var($_POST['time'], FILTER_SANITIZE_STRING);
-        $which = filter_var($_POST['which'], FILTER_SANITIZE_STRING);
+        $garage_id = strip_tags($_POST['garage_id']);
+        $date = strip_tags($_POST['date']);
+        $time = strip_tags($_POST['time']);
+        $which = strip_tags($_POST['which']);
         $order = wc_get_order($order_id);
         $booking_date_time = new \DateTime($date);
         /*$tz = new \DateTimeZone('Europe/London');
