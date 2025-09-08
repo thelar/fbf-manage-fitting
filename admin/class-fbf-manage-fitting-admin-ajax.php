@@ -34,7 +34,7 @@ class Fbf_Manage_Fitting_Admin_Ajax
 
     public function fbf_manage_fitting_setup_thickbox()
     {
-        check_ajax_referer($this->plugin_name, 'ajax_nonce');
+        //check_ajax_referer($this->plugin_name, 'ajax_nonce');
         global $wpdb;
         $garages_table = $wpdb->prefix . 'fbf_garages';
         $order_id = strip_tags($_POST['post_id']);
