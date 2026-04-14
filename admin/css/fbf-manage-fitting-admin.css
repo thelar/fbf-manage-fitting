@@ -67,3 +67,8 @@
 #manage_fitting .fitting-status.confirmed {
     color: darkgreen;
 }
+
+#garages-container {
+    overflow: scroll;
+    height: calc(100cqh - 310px);
+}
