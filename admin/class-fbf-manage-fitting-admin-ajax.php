@@ -42,7 +42,7 @@ class Fbf_Manage_Fitting_Admin_Ajax
         $is_fitting = $order->get_meta('_is_national_fitting', true);
         $radius = 45;
             if($is_fitting){
-            $selected_garage = get_post_meta($order_id, '_gs_selected_garage', true);
+            $selected_garage = $order->get_meta('_gs_selected_garage', true);
         }
         // Get products first
         $items = $order->get_items();
@@ -132,10 +132,11 @@ class Fbf_Manage_Fitting_Admin_Ajax
         }
 
         // Get current garage id
-        $orig_garage_id = get_post_meta($order_id, '_gs_selected_garage', true)['id'];
+        $selected_garage = $order->get_meta('_gs_selected_garage', true);
+        $orig_garage_id = $selected_garage['id'] ?? null;
         if($which==='text'){
             $conf_text = $time;
-            $time = get_post_meta($order_id, '_gs_selected_garage', true)['time'];
+            $time = $selected_garage['time'] ?? '';
         }
         if($orig_garage_id!=$garage_id){
             $garage_updated = true;
@@ -163,9 +164,9 @@ class Fbf_Manage_Fitting_Admin_Ajax
             if($which==='text'){
                 $booking['confirmation_text'] = $conf_text;
             }
-            update_post_meta($order_id, '_gs_selected_garage', $booking);
-            update_post_meta($order_id, '_national_fitting_garage_id', $garage_id);
-            update_post_meta($order_id, '_national_fitting_date_time', [
+            $order->update_meta_data('_gs_selected_garage', $booking);
+            $order->update_meta_data('_national_fitting_garage_id', $garage_id);
+            $order->update_meta_data('_national_fitting_date_time', [
                 'date' => $date,
                 'time' => $time,
             ]);
@@ -240,7 +241,7 @@ class Fbf_Manage_Fitting_Admin_Ajax
                 } else {
                     $attachment = null;
                 }
-            }else{
+            } else {
                 $attachment = null;
             }
 
