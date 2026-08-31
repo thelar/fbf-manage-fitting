@@ -119,7 +119,6 @@ class Fbf_Manage_Fitting_Admin {
 	        $order = ( $post instanceof WP_Post ) ? wc_get_order( $post->ID ) : $post;
             $is_fitting = $order->get_meta('_is_national_fitting', true);
             if($is_fitting){
-				echo 'is fitting';
                 add_meta_box(
                     'manage_fitting',
                     'Manage fitting',
@@ -134,6 +133,8 @@ class Fbf_Manage_Fitting_Admin {
     }
 
 	public function manage_fitting($post, $args){
+		echo '<p>meta box here</p>';
+		return;
 		$order_num = $args['args']['order_num'];
 		$order = wc_get_order($order_num);
 		$selected_garage = $order ? $order->get_meta('_gs_selected_garage', true) : [];
