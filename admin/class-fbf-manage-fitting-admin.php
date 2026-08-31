@@ -114,12 +114,16 @@ class Fbf_Manage_Fitting_Admin {
      * @since 0.1.0
      * @link http://codex.wordpress.org/Function_Reference/add_meta_box
      */
-    public function fbf_manage_fitting_admin_meta_box($type, $post){
+    public function fbf_manage_fitting_admin_meta_box($type, $post_or_order_object){
+
         if($type==='shop_order'){
-            $order_id = $post->ID;
-            $order = wc_get_order($order_id);
+	        // Check if HPOS is off (legacy WP_Post) or on (WC_Order)
+	        $order = ( $post_or_order_object instanceof WP_Post ) ? wc_get_order( $post_or_order_object->ID ) : $post_or_order_object;
+
+
             $is_fitting = $order->get_meta('_is_national_fitting', true);
             if($is_fitting){
+				echo 'is fitting';
                 add_meta_box(
                     'manage_fitting',
                     'Manage fitting',
@@ -127,7 +131,7 @@ class Fbf_Manage_Fitting_Admin {
                     null,
                     'normal',
                     'core',
-                    ['order_num'=>$post->ID],
+                    ['order_num'=>$order->get_id()],
                 );
             }
         }
