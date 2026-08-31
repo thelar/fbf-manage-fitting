@@ -116,6 +116,8 @@ class Fbf_Manage_Fitting_Admin {
      */
     public function fbf_manage_fitting_admin_meta_box($type, $post_or_order_object){
 
+		echo $post_or_order_object;
+
         if($type==='shop_order'){
 	        // Check if HPOS is off (legacy WP_Post) or on (WC_Order)
 	        $order = ( $post_or_order_object instanceof WP_Post ) ? wc_get_order( $post_or_order_object->ID ) : $post_or_order_object;
