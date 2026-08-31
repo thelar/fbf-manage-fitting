@@ -123,7 +123,6 @@ class Fbf_Manage_Fitting_Admin {
 
             $is_fitting = $order->get_meta('_is_national_fitting', true);
             if($is_fitting){
-				echo 'is fitting';
                 add_meta_box(
                     'manage_fitting',
                     'Manage fitting',
