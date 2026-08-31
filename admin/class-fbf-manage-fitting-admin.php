@@ -133,8 +133,6 @@ class Fbf_Manage_Fitting_Admin {
     }
 
 	public function manage_fitting($post, $args){
-		echo '<p>meta box here</p>';
-		return;
 		$order_num = $args['args']['order_num'];
 		$order = wc_get_order($order_num);
 		$selected_garage = $order ? $order->get_meta('_gs_selected_garage', true) : [];
@@ -152,14 +150,14 @@ class Fbf_Manage_Fitting_Admin {
             }
             if(!$is_confirmed){
                 printf('<strong>Selected garage:</strong> %s <br/><strong>Date/Time:</strong> %s - %s', $selected_garage['name'], $booking_date->format('jS F Y'), $time);
-                printf('<p>Booking status: <span class="fitting-status unconfirmed">Unconfirmed</span> - <a id="trigger-thickbox" href="#" data-post-id="%s">Confirm fitting</a></p>', $post->ID);
+                printf('<p>Booking status: <span class="fitting-status unconfirmed">Unconfirmed</span> - <a id="trigger-thickbox" href="#" data-post-id="%s">Confirm fitting</a></p>', $order->get_id());
             }else{
                 if($selected_garage['confirmation_type']==='time'){
                     printf('<strong>Selected garage:</strong> %s <br/><strong>Date/Time:</strong> %s - %s', $selected_garage['name'], $booking_date->format('jS F Y'), $time);
                 }else if($selected_garage['confirmation_type']==='text'){
                     printf('<strong>Selected garage:</strong> %s <br/><strong>Date/Time:</strong> %s - &lsquo;%s&rsquo;', $selected_garage['name'], $booking_date->format('jS F Y'), $selected_garage['confirmation_text']);
                 }
-                printf('<p>Booking status: <span class="fitting-status confirmed">Confirmed</span> - <a id="trigger-thickbox" href="#" data-post-id="%s">Change fitting</a></p>', $post->ID);
+                printf('<p>Booking status: <span class="fitting-status confirmed">Confirmed</span> - <a id="trigger-thickbox" href="#" data-post-id="%s">Change fitting</a></p>', $order->get_id());
             }
             $html = <<<HTML
 <div id="manage-fittings-thickbox" style="display:none;">
