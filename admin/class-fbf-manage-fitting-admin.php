@@ -116,7 +116,6 @@ class Fbf_Manage_Fitting_Admin {
      */
     public function fbf_manage_fitting_admin_meta_box($type, $post){
 		echo $type;
-		echo $post;
 		return;
         if($type==='shop_order'){
             $order_id = $post->ID;
