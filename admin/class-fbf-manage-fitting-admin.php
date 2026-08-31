@@ -115,9 +115,7 @@ class Fbf_Manage_Fitting_Admin {
      * @link http://codex.wordpress.org/Function_Reference/add_meta_box
      */
     public function fbf_manage_fitting_admin_meta_box($type, $post){
-		echo $type;
-		return;
-        if($type==='shop_order'){
+        if($type==='shop_order'||$type==='woocommerce_page_wc-orders'){
             $order_id = $post->ID;
             $order = wc_get_order($order_id);
             $is_fitting = $order->get_meta('_is_national_fitting', true);
