@@ -215,7 +215,6 @@ class Fbf_Manage_Fitting_Admin_Ajax
                 } else {
                     $order->set_shipping_postcode('');
                 }
-                $order->save();
 
                 // Get lat long for garage
                 $lat_lng = get_transient('national_fitting_garage_location_' . $r['centre_id']);
@@ -244,7 +243,7 @@ class Fbf_Manage_Fitting_Admin_Ajax
             } else {
                 $attachment = null;
             }
-
+	        $order->save();
 
             $email = WC()->mailer()->get_emails()['WC_Fitting_Confirmation'];
             $email->set_updated($garage_updated);
